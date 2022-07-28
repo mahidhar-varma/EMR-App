@@ -8,6 +8,7 @@ import CategoriesScreen from "../Screens/Categories/CategoriesScreen";
 import DocumentsListScreen from "../Screens/DocumentsList/DocumentsListScreen";
 import DocumentScreen from "../Screens/DocumentScreen/DocumentScreen";
 import ApprovalScreen from "../Screens/ApprovalScreen/ApprovalScreen";
+import HomeScreen from "../Screens/HomeScreen/HomeScreen";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ function MainNavigator() {
         },
       }}
     >
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="UploadScreen" component={UploadScreen} />
       <Stack.Screen name="CategoriesScreen" component={CategoriesScreen} />
       <Stack.Screen

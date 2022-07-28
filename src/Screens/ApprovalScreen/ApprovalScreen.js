@@ -9,12 +9,22 @@ import {
   TextInput,
   Drop,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import { DateTimePicker } from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 import DropdownComponent from "./Dropdown";
+import Dropdown from "react-dropdown";
 import styles from "./styles";
 import configData from "../../../config";
+
+const data = [
+  { label: "Diagnostic Report", value: "Diagnostic Report" },
+  { label: "Prescription", value: "Prescription" },
+  { label: "Discharge Summary", value: "Discharge Summary" },
+  { label: "Immunization_Report", value: "Immunization Report" },
+  { label: "Other", value: "Other" },
+];
 
 export default function ApprovalScreen(props) {
   const { navigation, route } = props;
@@ -22,40 +32,44 @@ export default function ApprovalScreen(props) {
   console.log("route", route);
   var fileUploaded = route.params["fileUri"];
   var documentName = route.params["name"];
-  var doctorName = "";
-  var hospitalName = "";
+  var dialog = route.params["dialog"];
+  var [doctorName, setDoctorName] = useState("");
+  var [hospitalName, setHospitalName] = useState("");
   var issueDate = "2020-11-18";
-  const [dialog, setDialog] = useState(true);
+
+  const [mydate, setDate] = useState(new Date());
+  const [displaymode, setMode] = useState("date");
+  const [isDisplayDate, setShow] = useState(false);
+
+  // const [dialog, setDialog] = useState(true);
   var category = route.params["category"];
   console.log("params", fileUploaded, category, documentName);
   const [inputCategory, setInputCategory] = useState(category);
   var userId = route.params["userId"];
-
-  useEffect(
-    (inputCategory) => {
-      Alert.alert(
-        "Confirm Category",
-        "Category Name:  " + inputCategory,
-        [
-          {
-            text: "Confirm",
-            onPress: () => {
-              setDialog(false);
-            },
-          },
-          {
-            text: "Change",
-            onPress: () => {
-              setDialog(true);
-            },
-            style: "cancel",
-          },
-        ],
-        { cancelable: false }
-      );
-    },
-    [inputCategory]
+  console.log(
+    "params0...",
+    "&&  ",
+    fileUploaded,
+    "&&  ",
+    documentName,
+    "&&  ",
+    userId,
+    "&&  ",
+    inputCategory,
+    "&&  ",
+    issueDate,
+    "&&  ",
+    doctorName,
+    "&&  ",
+    hospitalName
   );
+  const changeSelectedDate = (event, selectedDate) => {
+    const currentDate = selectedDate || mydate;
+    setDate(currentDate);
+    issueDate = currentDate;
+    setShow(false);
+  };
+  const m = moment(mydate, "YYYY-MM-DD").format().toString();
   const getMimeType = (ext) => {
     // mime type mapping for few of the sample file types
     switch (ext) {
@@ -70,6 +84,43 @@ export default function ApprovalScreen(props) {
     }
   };
 
+  const showSuccessAlert = (fileUri, name, userId, category) => {
+    Alert.alert(
+      "Upload Successful",
+      "",
+      [
+        {
+          text: "Ok",
+          onPress: () => {
+            navigation.navigate("UploadScreen", {});
+          },
+          style: "cancel",
+        },
+        {
+          text: "Close",
+          onPress: () => {
+            navigation.navigate("UploadScreen", {});
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  const datepicker = () => {
+    {
+      isDisplayDate && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={mydate}
+          mode={displaymode}
+          is24Hour={true}
+          display="default"
+          onChange={changeSelectedDate}
+        />
+      );
+    }
+  };
+
   const uploadDocument = async () => {
     try {
       setLoading(true);
@@ -79,6 +130,11 @@ export default function ApprovalScreen(props) {
 
       const extArr = /\.(\w+)$/.exec(filename);
       const type = getMimeType(extArr[1]);
+      issueDate = moment(mydate, "YYYY-MM-DD")
+        .format()
+        .toString()
+        .split("T", [1])
+        .toString();
 
       formData.append("file", { uri: fileUri, name: filename, type });
       formData.append("documentName", documentName);
@@ -88,6 +144,23 @@ export default function ApprovalScreen(props) {
       formData.append("doctorName", doctorName);
       formData.append("hospitalName", hospitalName);
       formData.append("source", "user");
+      console.log(
+        "params...",
+        "&&  ",
+        fileUri,
+        "&&  ",
+        documentName,
+        "&&  ",
+        userId,
+        "&&  ",
+        inputCategory,
+        "&&  ",
+        issueDate,
+        "&&  ",
+        doctorName,
+        "&&  ",
+        hospitalName
+      );
 
       console.log(configData["serverUrl"] + "/documents");
       await fetch(configData["serverUrl"] + "/documents", {
@@ -109,8 +182,9 @@ export default function ApprovalScreen(props) {
           console.log("returned body", result);
           //console.log('response data', documentsList)
           setLoading(false);
-          alert("Upload Successful");
-          navigation.navigate("UploadScreen", {});
+          //alert("Upload Successful");
+          // navigation.navigate("UploadScreen", {});
+          showSuccessAlert();
         })
         .catch(function (error) {
           console.log("-------- error ------- " + error);
@@ -123,14 +197,23 @@ export default function ApprovalScreen(props) {
 
   return (
     <View style={styles.containerStyle}>
-      {!loading && !loading && dialog && (
-        <DropdownComponent
-          onChange={(item) => {
-            setInputCategory(item.value);
-            setIsFocus(false);
-          }}
-        />
-      )}
+      {loading ? (
+        <View style={[styles.containerStyle, styles.horizontalStyle]}>
+          <ActivityIndicator animating={true} size="large" color="blue" />
+        </View>
+      ) : null}
+      {!loading ? (
+        dialog ? (
+          <View>
+            <DropdownComponent
+              onChange={(item) => {
+                setInputCategory(item.value);
+                setIsFocus(false);
+              }}
+            />
+          </View>
+        ) : null
+      ) : null}
 
       {!loading && !dialog && (
         <View style={styles.container}>
@@ -145,16 +228,7 @@ export default function ApprovalScreen(props) {
         </View>
       )}
 
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Enter Document Name"
-        mode="outlined"
-        activeUnderlineColor="green"
-        onChangeText={(value) => {
-          value ? setName(value) : alert("Document name cannot be empty!!");
-        }}
-      /> */}
-      {!loading && (
+      {!loading ? (
         <TextInput
           style={styles.input}
           placeholder="Enter Hospital/Lab Name"
@@ -162,12 +236,12 @@ export default function ApprovalScreen(props) {
           activeUnderlineColor="green"
           onChangeText={(value) => {
             value
-              ? (hospitalName = value)
+              ? setHospitalName(value)
               : alert("Hospital/Lab name cannot be empty!!");
           }}
         />
-      )}
-      {!loading && (
+      ) : null}
+      {!loading ? (
         <TextInput
           style={styles.input}
           placeholder="Enter Doctor Name"
@@ -175,13 +249,43 @@ export default function ApprovalScreen(props) {
           activeUnderlineColor="green"
           onChangeText={(value) => {
             value
-              ? (doctorName = value)
+              ? setDoctorName(value)
               : alert("Doctor name cannot be empty!!");
           }}
         />
-      )}
+      ) : null}
+      {!loading ? (
+        <View>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            activeOpacity={1}
+            onPress={() => {
+              setShow(true);
+            }}
+            title="Show date picker!"
+          >
+            <Text style={styles.buttonTextStyle}>Date Of Issue</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
-      {!loading && (
+      {isDisplayDate && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={mydate}
+          mode="date"
+          is24Hour={true}
+          display="default"
+          onChange={changeSelectedDate}
+        />
+      )}
+      {!loading ? (
+        <Text style={styles.input} mode="outlined" activeUnderlineColor="green">
+          {m.split("T", [1]).toString()}
+        </Text>
+      ) : null}
+
+      {!loading ? (
         <TouchableOpacity
           style={styles.buttonStyle}
           activeOpacity={0.5}
@@ -189,7 +293,7 @@ export default function ApprovalScreen(props) {
         >
           <Text style={styles.buttonTextStyle}>Upload Document</Text>
         </TouchableOpacity>
-      )}
+      ) : null}
     </View>
   );
 }

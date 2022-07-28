@@ -8,6 +8,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -21,6 +22,7 @@ export default function UploadScreen(props) {
   const [name, setName] = useState("");
   var [loading, setLoading] = useState(false);
   var userId = configData.userId;
+  var dialog = 0;
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -73,6 +75,55 @@ export default function UploadScreen(props) {
       setFile(result.uri);
     }
   };
+
+  const checkCategory = (fileUri, name, userId, category) => {
+    const data1 = {
+      Diagnostic_Report: "Diagnostic Report",
+      Prescription: "Prescription",
+      Discharge_Summary: "Discharge Summary",
+      Immunization_Report: "Immunization Report",
+      Other: "Other",
+    };
+    console.log("category..", category, data1[category]);
+    Alert.alert(
+      "Confirm Category",
+      "Category Name:  " + data1[category],
+      [
+        {
+          text: "Change",
+          onPress: () => {
+            // setDialog(true);
+            dialog = 1;
+            navigation.navigate("ApprovalScreen", {
+              fileUri,
+              name,
+              category,
+              userId,
+              category,
+              dialog,
+            });
+          },
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: () => {
+            // setDialog(false);
+            dialog = 0;
+            navigation.navigate("ApprovalScreen", {
+              fileUri,
+              name,
+              category,
+              userId,
+              category,
+              dialog,
+            });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
   const uploadFile = async () => {
     if (name && file) {
       setLoading(true);
@@ -107,17 +158,12 @@ export default function UploadScreen(props) {
           .then(function (result) {
             if (result["message"] == "name error") {
               alert("Document with this name exists!!");
+              navigation.navigate("UploadScreen", {});
             } else {
               setLoading(false);
-              alert("Upload Successful");
               const category = result["category"];
-              navigation.navigate("ApprovalScreen", {
-                fileUri,
-                name,
-                category,
-                userId,
-                category,
-              });
+
+              checkCategory(fileUri, name, userId, category);
             }
             console.log(result);
           })
@@ -154,6 +200,10 @@ export default function UploadScreen(props) {
     <View style={styles.mainBody}>
       {!loading && (
         <View style={{ alignItems: "center" }}>
+          <Image
+            style={styles.image}
+            source={require("../../../assets/icons/log2.png")}
+          />
           <Text style={{ fontSize: 30, textAlign: "center" }}>
             Upload Document
           </Text>
@@ -215,6 +265,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
+    backgroundColor: "white",
+  },
+  image: {
+    marginBottom: 40,
+    height: 100,
+    resizeMode: "contain",
   },
   buttonStyle: {
     backgroundColor: "#307ecc",

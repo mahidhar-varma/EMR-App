@@ -8,6 +8,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Linking,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -25,18 +27,20 @@ export default function DocumentScreen(props) {
   const documentId = route.params.item.documentId;
   userId = route.params["userId"];
   var [loading, setLoading] = useState(false);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <MenuImage
-          onPress={() => {
-            navigation.openDrawer();
-          }}
-        />
-      ),
-      headerRight: () => <View />,
-    });
-  }, []);
+  var [URL, setURL] = useState("");
+
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerLeft: () => (
+  //       <MenuImage
+  //         onPress={() => {
+  //           navigation.openDrawer();
+  //         }}
+  //       />
+  //     ),
+  //     headerRight: () => <View />,
+  //   });
+  // }, []);
 
   const [file, setFile] = useState(null);
   const [uploading, startUploading] = useState(false);
@@ -53,57 +57,106 @@ export default function DocumentScreen(props) {
       setFile(result.uri);
     }
   };
+  const data1 = {
+    Diagnostic_Report: "Diagnostic Report",
+    Prescription: "Prescription",
+    Discharge_Summary: "Discharge Summary",
+    Immunization_Report: "Immunization Report",
+    Other: "Other",
+  };
+  const downloadUrl = () => {
+    console.log("category..", category, data1[category]);
+    Alert.alert(
+      "File downloaded successfully..",
+      "",
+      [
+        {
+          text: "Ok",
+          onPress: () => {
+            // setDialog(true);
+            // dialog = 1;
+            // navigation.navigate("ApprovalScreen", {
+            //   fileUri,
+            //   name,
+            //   category,
+            //   userId,
+            //   category,
+            //   dialog,
+            // });
+          },
+          style: "cancel",
+        },
+        // {
+        //   text: "Confirm",
+        //   onPress: () => {
+        //     // setDialog(false);
+        //     dialog = 0;
+        //     navigation.navigate("ApprovalScreen", {
+        //       fileUri,
+        //       name,
+        //       category,
+        //       userId,
+        //       category,
+        //       dialog,
+        //     });
+        //   },
+        // },
+      ],
+      { cancelable: false }
+    );
+  };
 
   const getURL = async () => {
-    const getDocuments = async () => {
-      try {
-        setLoading(false);
-        console.log(
-          configData["serverUrl"] +
-            "/documents/" +
-            documentId +
-            "?userId=" +
-            userId +
-            "&category=" +
-            category
-        );
-        await fetch(
-          configData["serverUrl"] +
-            "/documents/" +
-            documentId +
-            "?userId=" +
-            userId +
-            "&category=" +
-            category,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-          .then(function (response) {
-            console.log("response data", response);
-            return response.json();
-          })
-          .catch(function (error) {
-            console.log("-------- error0 ------- " + error);
-            alert("result:" + error);
-          })
-          .then(function (result) {
-            setDocumentsList(result["url"]);
-            console.log("returned url", result["url"]);
-            //console.log('response data', documentsList)
-            setLoading(true);
-          })
-          .catch(function (error) {
-            console.log("-------- error ------- " + error);
-            alert("result:" + error);
-          });
-      } catch (e) {
-        console.log(e);
-      }
-    };
+    try {
+      setLoading(false);
+      console.log(
+        configData["serverUrl"] +
+          "/documents/" +
+          documentId +
+          "?userId=" +
+          userId +
+          "&category=" +
+          category
+      );
+      await fetch(
+        configData["serverUrl"] +
+          "/documents/" +
+          documentId +
+          "?userId=" +
+          userId +
+          "&category=" +
+          category,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then(function (response) {
+          console.log("response data", response);
+          return response.json();
+        })
+        .catch(function (error) {
+          console.log("-------- error0 ------- " + error);
+          alert("result:" + error);
+        })
+        .then(function (result) {
+          setURL(result["url"]);
+
+          console.log("returned url", result["url"]);
+          Linking.openURL(result["url"]);
+          downloadUrl();
+          //console.log('response data', documentsList)
+          setLoading(true);
+        })
+        .catch(function (error) {
+          console.log("-------- error ------- " + error);
+          alert("result:" + error);
+        });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -126,7 +179,9 @@ export default function DocumentScreen(props) {
         </View>
       )}
 
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{ marginTop: 0, alignItems: "center", justifyContent: "center" }}
+      >
         {!loading && (
           <Text style={styles.headline}>
             <Text
@@ -152,7 +207,7 @@ export default function DocumentScreen(props) {
             </Text>
             <Text style={{ fontWeight: "bold" }}>Category: </Text>
             <Text>
-              {category}
+              {data1[category]}
               {"\n"}
             </Text>
             {/* <Text style={{fontWeight: "bold"}}>Document Name:    </Text><Text>{documentName}{'\n'}</Text> */}
@@ -164,17 +219,19 @@ export default function DocumentScreen(props) {
           <TouchableOpacity
             style={styles.buttonStyle}
             activeOpacity={0.5}
-            onPress={() => {}}
+            onPress={() => {
+              getURL();
+            }}
           >
             <Text style={styles.buttonTextStyle}>Download</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.buttonStyle}
             activeOpacity={0.5}
             onPress={() => {}}
           >
             <Text style={styles.buttonTextStyle}>Share</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       )}
     </View>

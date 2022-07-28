@@ -5,9 +5,10 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import styles from "./styles";
 
 const data = [
-  { label: "Diagnostic Report", value: "Diagnostic Report" },
+  { label: "Diagnostic Report", value: "Diagnostic_Report" },
   { label: "Prescription", value: "Prescription" },
   { label: "Discharge Summary", value: "Discharge_Summary" },
+  { label: "Immunization Report", value: "Immunization_Report" },
   { label: "Other", value: "Other" },
   // { label: "Item 3", value: "3" },
   // { label: "Item 4", value: "4" },
@@ -17,7 +18,7 @@ const data = [
   // { label: "Item 8", value: "8" },
 ];
 
-export default function DropdownComponent() {
+const DropdownComponent = () => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
 
@@ -25,7 +26,7 @@ export default function DropdownComponent() {
     if (value || isFocus) {
       return (
         <Text style={[styles.label, isFocus && { color: "blue" }]}>
-          Dropdown label
+          Categories
         </Text>
       );
     }
@@ -46,7 +47,7 @@ export default function DropdownComponent() {
         maxHeight={300}
         labelField="label"
         valueField="value"
-        placeholder={!isFocus ? "Select category" : "..."}
+        placeholder={!isFocus ? "Select Category" : "..."}
         searchPlaceholder="Search..."
         value={value}
         onFocus={() => setIsFocus(true)}
@@ -66,44 +67,6 @@ export default function DropdownComponent() {
       />
     </View>
   );
-}
+};
 
-// const styles = StyleSheet.create({
-//   // container: {
-//   //   backgroundColor: "white",
-//   //   padding: 16,
-//   // },
-//   dropdown: {
-//     height: 50,
-//     borderColor: "gray",
-//     borderWidth: 0.5,
-//     borderRadius: 8,
-//     paddingHorizontal: 8,
-//   },
-//   icon: {
-//     marginRight: 5,
-//   },
-//   label: {
-//     position: "absolute",
-//     backgroundColor: "white",
-//     left: 22,
-//     top: 8,
-//     zIndex: 999,
-//     paddingHorizontal: 8,
-//     fontSize: 14,
-//   },
-//   placeholderStyle: {
-//     fontSize: 16,
-//   },
-//   selectedTextStyle: {
-//     fontSize: 16,
-//   },
-//   iconStyle: {
-//     width: 20,
-//     height: 20,
-//   },
-//   inputSearchStyle: {
-//     height: 40,
-//     fontSize: 16,
-//   },
-// });
+export default DropdownComponent;

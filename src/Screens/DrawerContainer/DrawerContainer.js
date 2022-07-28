@@ -3,7 +3,7 @@ import { View } from "react-native";
 import PropTypes from "prop-types";
 import styles from "./styles";
 import MenuButton from "../../components/MenuButton/MenuButton";
-import UploadScreen from '../UploadDocument/UploadDocument'
+import UploadScreen from "../UploadDocument/UploadDocument";
 
 export default function DrawerContainer(props) {
   const { navigation } = props;
@@ -18,7 +18,7 @@ export default function DrawerContainer(props) {
             navigation.closeDrawer();
           }}
         />
-         <MenuButton
+        <MenuButton
           title="Categories"
           // source={require("../../../assets/icons/category.png")}
           onPress={() => {
@@ -26,14 +26,14 @@ export default function DrawerContainer(props) {
             navigation.closeDrawer();
           }}
         />
-        {/*<MenuButton
-          title="SEARCH"
-          source={require("../../../assets/icons/search.png")}
+        <MenuButton
+          title="Home"
+          // source={require("../../../assets/icons/search.png")}
           onPress={() => {
-            navigation.navigate("Search");
+            navigation.navigate("HomeScreen");
             navigation.closeDrawer();
           }}
-        /> */}
+        />
       </View>
     </View>
   );
