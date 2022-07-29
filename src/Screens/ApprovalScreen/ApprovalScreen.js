@@ -13,10 +13,20 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
-import DropdownComponent from "./Dropdown";
-import Dropdown from "react-dropdown";
+// import DropdownComponent from "./Dropdown";
+// import Dropdown from "react-dropdown";
 import styles from "./styles";
+import { Dropdown } from "react-native-element-dropdown";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import configData from "../../../config";
+
+const dropdownData = [
+  { label: "Diagnostic Report", value: "Diagnostic_Report" },
+  { label: "Prescription", value: "Prescription" },
+  { label: "Discharge Summary", value: "Discharge_Summary" },
+  { label: "Immunization Report", value: "Immunization_Report" },
+  { label: "Other", value: "Other" },
+];
 
 const data = [
   { label: "Diagnostic Report", value: "Diagnostic Report" },
@@ -40,6 +50,8 @@ export default function ApprovalScreen(props) {
   const [mydate, setDate] = useState(new Date());
   const [displaymode, setMode] = useState("date");
   const [isDisplayDate, setShow] = useState(false);
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   // const [dialog, setDialog] = useState(true);
   var category = route.params["category"];
@@ -69,6 +81,7 @@ export default function ApprovalScreen(props) {
     issueDate = currentDate;
     setShow(false);
   };
+
   const m = moment(mydate, "YYYY-MM-DD").format().toString();
   const getMimeType = (ext) => {
     // mime type mapping for few of the sample file types
@@ -82,6 +95,16 @@ export default function ApprovalScreen(props) {
       case "png":
         return "image/png";
     }
+  };
+  const renderLabel = () => {
+    if (value || isFocus) {
+      return (
+        <Text style={[styles.label, isFocus && { color: "blue" }]}>
+          Categories
+        </Text>
+      );
+    }
+    return null;
   };
 
   const showSuccessAlert = (fileUri, name, userId, category) => {
@@ -205,11 +228,42 @@ export default function ApprovalScreen(props) {
       {!loading ? (
         dialog ? (
           <View>
-            <DropdownComponent
+            {/* <DropdownComponent
               onChange={(item) => {
                 setInputCategory(item.value);
                 setIsFocus(false);
               }}
+            /> */}
+            {renderLabel()}
+            <Dropdown
+              style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={dropdownData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocus ? "Select Category" : "..."}
+              searchPlaceholder="Search..."
+              value={value}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={(item) => {
+                setInputCategory(item.value);
+                setValue(item.value);
+                setIsFocus(false);
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={isFocus ? "blue" : "black"}
+                  name="Safety"
+                  size={20}
+                />
+              )}
             />
           </View>
         ) : null
