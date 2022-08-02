@@ -34,6 +34,14 @@ export default function DrawerContainer(props) {
             navigation.closeDrawer();
           }}
         />
+        <MenuButton
+          title="Sort Documents"
+          // source={require("../../../assets/icons/search.png")}
+          onPress={() => {
+            navigation.navigate("DocumentsListSortedScreen",{"sortColumn":"issuedDate"});
+            navigation.closeDrawer();
+          }}
+        />
       </View>
     </View>
   );

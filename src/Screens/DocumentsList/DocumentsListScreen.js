@@ -16,13 +16,6 @@ export default function DocumentsListScreen(props) {
   const getDocuments = async () => {
     try {
       setLoading(false);
-      let formData = new FormData();
-      formData.append("category", category);
-      var bodyData = {
-        userId: userId,
-        category: category,
-      };
-
       console.log(configData["serverUrl"] + "/documents", bodyData);
       await fetch(
         configData["serverUrl"] +

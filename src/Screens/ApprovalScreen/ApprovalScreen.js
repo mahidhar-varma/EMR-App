@@ -28,13 +28,13 @@ const dropdownData = [
   { label: "Other", value: "Other" },
 ];
 
-const data = [
-  { label: "Diagnostic Report", value: "Diagnostic Report" },
-  { label: "Prescription", value: "Prescription" },
-  { label: "Discharge Summary", value: "Discharge Summary" },
-  { label: "Immunization_Report", value: "Immunization Report" },
-  { label: "Other", value: "Other" },
-];
+// const data = [
+//   { label: "Diagnostic Report", value: "Diagnostic Report" },
+//   { label: "Prescription", value: "Prescription" },
+//   { label: "Discharge Summary", value: "Discharge Summary" },
+//   { label: "Immunization_Report", value: "Immunization Report" },
+//   { label: "Other", value: "Other" },
+// ];
 
 export default function ApprovalScreen(props) {
   const { navigation, route } = props;
