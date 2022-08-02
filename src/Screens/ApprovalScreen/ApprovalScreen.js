@@ -133,6 +133,7 @@ export default function ApprovalScreen(props) {
     {
       isDisplayDate && (
         <DateTimePicker
+          maximumDate={new Date()}
           testID="dateTimePicker"
           value={mydate}
           mode={displaymode}
@@ -142,6 +143,23 @@ export default function ApprovalScreen(props) {
         />
       );
     }
+  };
+  const showError = (error) => {
+    Alert.alert(
+      error,
+      "",
+      [
+        {
+          text: "Close",
+          onPress: () => {
+            // setDialog(true);
+            navigation.navigate("CategoriesScreen", {});
+          },
+          style: "cancel"
+        }
+      ],
+      { cancelable: false }
+    );
   };
 
   const uploadDocument = async () => {
@@ -196,6 +214,7 @@ export default function ApprovalScreen(props) {
       })
       .catch(function (error) {
         console.log("-------- error0 ------- " + error);
+        showError();
         alert("result:" + error);
       })
         .then(function (response) {
@@ -204,7 +223,8 @@ export default function ApprovalScreen(props) {
         })
         .catch(function (error) {
           console.log("-------- error0 ------- " + error);
-          alert("result:" + error);
+          // alert("result:" + error);
+          showError();
         })
         .then(function (result) {
           console.log("returned body", result);
@@ -330,6 +350,7 @@ export default function ApprovalScreen(props) {
 
       {isDisplayDate && (
         <DateTimePicker
+          maximumDate={new Date()}
           testID="dateTimePicker"
           value={mydate}
           mode="date"

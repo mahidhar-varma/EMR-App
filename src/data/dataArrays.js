@@ -21,7 +21,7 @@ export const categories = [
   },
   {
     displayName: "Others",
-    idName: "Others",
+    idName: "Other",
     documentImage: require("../../assets/icons/Other.png"),
   },
 ];

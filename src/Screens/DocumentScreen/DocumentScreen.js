@@ -23,7 +23,7 @@ import moment from "moment";
 export default function DocumentScreen(props) {
   const { navigation, route } = props;
   const [name, setName] = useState("");
-  // console.log("route", route);
+  console.log("route..................", route);
   const category = route.params.item.category;
   var [documentName, setDocumentName] = useState(
     route.params.item.documentName

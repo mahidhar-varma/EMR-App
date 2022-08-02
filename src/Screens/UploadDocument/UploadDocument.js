@@ -76,6 +76,42 @@ export default function UploadScreen(props) {
     }
   };
 
+  const nameError = () => {
+    Alert.alert(
+      "A document with this name already exists",
+      "",
+      [
+        {
+          text: "Close",
+          onPress: () => {
+            // setDialog(true);
+            navigation.navigate("UploadScreen", {});
+          },
+          style: "cancel"
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+  const showError = () => {
+    Alert.alert(
+      "Error occured while uploading document",
+      "",
+      [
+        {
+          text: "Close",
+          onPress: () => {
+            // setDialog(true);
+            navigation.navigate("UploadScreen", {});
+          },
+          style: "cancel"
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+
   const checkCategory = (fileUri, name, userId, category, fileType) => {
     const data1 = {
       Diagnostic_Report: "Diagnostic Report",
@@ -160,8 +196,10 @@ export default function UploadScreen(props) {
           })
           .then(function (result) {
             if (result && result["message"] == "name error") {
-              alert("Document with this name exists!!");
-              navigation.navigate("UploadScreen", {});
+              // alert("Document with this name exists!!");
+              // navigation.navigate("UploadScreen", {});
+              setLoading(false);
+              nameError();
             } else {
               setLoading(false);
               const category = result["category"];
@@ -173,7 +211,9 @@ export default function UploadScreen(props) {
           })
           .catch(function (error) {
             console.log("-------- error ------- " + error);
-            alert("result:" + error);
+            // alert("result:" + error);
+            setLoading(false);
+            showError();
           });
       } catch (exception) {
         console.log(exception);

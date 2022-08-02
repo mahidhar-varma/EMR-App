@@ -9,6 +9,7 @@ import DocumentsListScreen from "../Screens/DocumentsList/DocumentsListScreen";
 import DocumentScreen from "../Screens/DocumentScreen/DocumentScreen";
 import ApprovalScreen from "../Screens/ApprovalScreen/ApprovalScreen";
 import HomeScreen from "../Screens/HomeScreen/HomeScreen";
+import DocumentsListSortedScreen from "../Screens/DocumentListSortedScreen/DocumentListSortedScreen";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,8 @@ function MainNavigator() {
       />
       <Stack.Screen name="DocumentScreen" component={DocumentScreen} />
       <Stack.Screen name="ApprovalScreen" component={ApprovalScreen} />
+      <Stack.Screen name="DocumentsListSortedScreen" component={DocumentsListSortedScreen} />
+      
     </Stack.Navigator>
   );
 }
