@@ -39,11 +39,10 @@ const data = [
 export default function ApprovalScreen(props) {
   const { navigation, route } = props;
   var [loading, setLoading] = useState(false);
-  // console.log("route", route);
+  console.log("route", route);
   var fileUploaded = route.params["fileUri"];
   var documentName = route.params["name"];
   var dialog = route.params["dialog"];
-  var fileType = route.params["type"];
   var [doctorName, setDoctorName] = useState("");
   var [hospitalName, setHospitalName] = useState("");
   var issueDate = "2020-11-18";
@@ -145,23 +144,6 @@ export default function ApprovalScreen(props) {
       );
     }
   };
-  const showError = (error) => {
-    Alert.alert(
-      error,
-      "",
-      [
-        {
-          text: "Close",
-          onPress: () => {
-            // setDialog(true);
-            navigation.navigate("CategoriesScreen", {});
-          },
-          style: "cancel"
-        }
-      ],
-      { cancelable: false }
-    );
-  };
 
   const uploadDocument = async () => {
     try {
@@ -171,21 +153,20 @@ export default function ApprovalScreen(props) {
       let filename = fileUri.split("/").pop();
 
       const extArr = /\.(\w+)$/.exec(filename);
-      // const type = getMimeType(extArr[1]);
+      const type = getMimeType(extArr[1]);
       issueDate = moment(mydate, "YYYY-MM-DD")
         .format()
         .toString()
         .split("T", [1])
         .toString();
 
-      formData.append("file", { uri: fileUri, name: filename, FileType });
+      formData.append("file", { uri: fileUri, name: filename, type });
       formData.append("documentName", documentName);
       formData.append("userId", userId);
       formData.append("category", inputCategory);
       formData.append("issuedDate", issueDate);
       formData.append("doctorName", doctorName);
       formData.append("hospitalName", hospitalName);
-      formData.append("fileType", fileType);
       formData.append("source", "user");
       console.log(
         "params...",
@@ -218,7 +199,6 @@ export default function ApprovalScreen(props) {
           return response.json();
         })
         .catch(function (error) {
-          showError();
           console.log("-------- error0 ------- " + error);
           alert("result:" + error);
         })
@@ -231,7 +211,6 @@ export default function ApprovalScreen(props) {
           showSuccessAlert();
         })
         .catch(function (error) {
-          showError();
           console.log("-------- error ------- " + error);
           alert("result:" + error);
         });

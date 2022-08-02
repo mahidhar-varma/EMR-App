@@ -38,7 +38,7 @@ export default function DocumentsListScreen(props) {
         }
       )
         .then(function (response) {
-          console.log("response data", response);
+          // console.log("response data", response);
           return response.json();
         })
         .catch(function (error) {
@@ -98,14 +98,14 @@ export default function DocumentsListScreen(props) {
   return (
     <View>
       {/* {console.log("test..",documentsList)} */}
-      {!loading && (
+      {!loading ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ActivityIndicator color={"#fff"} />
         </View>
-      )}
-      {loading && (
+      ) : null}
+      {loading ? (
         <View>
           <FlatList
             vertical
@@ -116,7 +116,7 @@ export default function DocumentsListScreen(props) {
             keyExtractor={(item) => `${item.documentId}`}
           />
         </View>
-      )}
+      ) : null}
     </View>
   );
 }
