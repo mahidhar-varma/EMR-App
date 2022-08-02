@@ -1,3 +1,3 @@
-var configData = { serverUrl: "http://172.29.206.161:5003", userId: "5" };
+var configData = { serverUrl: "http://192.168.1.45:5005", userId: "5" };
 
 export default configData;

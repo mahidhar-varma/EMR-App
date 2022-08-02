@@ -8,7 +8,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -32,7 +32,7 @@ export default function UploadScreen(props) {
           }}
         />
       ),
-      headerRight: () => <View />
+      headerRight: () => <View />,
     });
   }, []);
 
@@ -54,73 +54,37 @@ export default function UploadScreen(props) {
     // mime type mapping for few of the sample file types
     switch (ext) {
       case "pdf":
-        return "pdf";
+        return "application/pdf";
       case "jpg":
-        return "jpg";
+        return "image/jpeg";
       case "jpeg":
-        return "jpg";
+        return "image/jpeg";
       case "png":
-        return "png";
+        return "image/png";
     }
-  };
-
-  const showError = () => {
-    Alert.alert(
-      "Error occured while uploading document",
-      "",
-      [
-        {
-          text: "Close",
-          onPress: () => {
-            // setDialog(true);
-            navigation.navigate("UploadScreen", {});
-          },
-          style: "cancel"
-        }
-      ],
-      { cancelable: false }
-    );
   };
 
   const pickFile = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: "*/*"
+      type: "*/*",
     });
 
-    // console.log(result);
+    console.log(result);
 
     if (!result.cancelled) {
       setFile(result.uri);
     }
   };
 
-  const nameError = () => {
-    Alert.alert(
-      "A document with this name already exists",
-      "",
-      [
-        {
-          text: "Close",
-          onPress: () => {
-            // setDialog(true);
-            navigation.navigate("UploadScreen", {});
-          },
-          style: "cancel"
-        }
-      ],
-      { cancelable: false }
-    );
-  };
-
-  const checkCategory = (fileUri, name, userId, category) => {
+  const checkCategory = (fileUri, name, userId, category, fileType) => {
     const data1 = {
       Diagnostic_Report: "Diagnostic Report",
       Prescription: "Prescription",
       Discharge_Summary: "Discharge Summary",
       Immunization_Report: "Immunization Report",
-      Other: "Other"
+      Other: "Other",
     };
-    // console.log("category..", category, data1[category]);
+    console.log("category..", category, data1[category]);
     Alert.alert(
       "Confirm Category",
       "Category Name:  " + data1[category],
@@ -137,10 +101,10 @@ export default function UploadScreen(props) {
               userId,
               category,
               dialog,
-              type
+              fileType
             });
           },
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Confirm",
@@ -154,16 +118,15 @@ export default function UploadScreen(props) {
               userId,
               category,
               dialog,
-              type
+              fileType
             });
-          }
-        }
+          },
+        },
       ],
       { cancelable: false }
     );
   };
   const uploadFile = async () => {
-    console.log("name file ", name, file);
     if (name && file) {
       setLoading(true);
       const fileUri = file;
@@ -177,60 +140,49 @@ export default function UploadScreen(props) {
       let formData = new FormData();
 
       formData.append("file", { uri: fileUri, name: filename, type });
-      formData.append("fileType", type);
 
       formData.append("documentName", name);
+
       formData.append("userId", userId);
-      // console.log("print2");
-      console.log("Request data...");
-      console.log(YOUR_SERVER_URL, formData);
+      console.log("print2");
+      console.log(YOUR_SERVER_URL);
       var response;
       try {
         response = await fetch(YOUR_SERVER_URL, {
           method: "POST",
           body: formData,
           headers: {
-            "content-type": "multipart/form-data"
-          }
+            "content-type": "multipart/form-data",
+          },
         })
           .then(function (response) {
             return response.json();
           })
-          .catch(function (error) {
-            setLoading(false);
-            showError();
-            console.log("-------- error ------- " + error);
-            // alert("result:" + error);
-          })
           .then(function (result) {
-            console.log("result...", result);
-            if (result["message"] == "name error") {
-              // alert("Document with this name exists!!");
-              setLoading(false);
-              nameError();
-              // navigation.navigate("UploadScreen", {});
+            if (result && result["message"] == "name error") {
+              alert("Document with this name exists!!");
+              navigation.navigate("UploadScreen", {});
             } else {
               setLoading(false);
               const category = result["category"];
+              const fileType = result["fileType"];
 
-              checkCategory(fileUri, name, userId, category, type);
+              checkCategory(fileUri, name, userId, category, fileType);
             }
             console.log(result);
           })
           .catch(function (error) {
-            setLoading(false);
-            showError();
             console.log("-------- error ------- " + error);
-            // alert("result:" + error);
+            alert("result:" + error);
           });
       } catch (exception) {
         console.log(exception);
       }
 
       startUploading(false);
-      // console.log("print3");
-      // let responseAgain = response;
-      // console.log(responseAgain);
+      console.log("print3");
+      let responseAgain = response;
+      console.log(responseAgain);
       return response;
     }
     if (!name) {
@@ -264,7 +216,7 @@ export default function UploadScreen(props) {
               fontSize: 30,
               marginTop: 0,
               marginBottom: 40,
-              textAlign: "center"
+              textAlign: "center",
             }}
           ></Text>
         </View>
@@ -317,12 +269,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   image: {
     marginBottom: 40,
     height: 100,
-    resizeMode: "contain"
+    resizeMode: "contain",
   },
   buttonStyle: {
     backgroundColor: "#307ecc",
@@ -334,12 +286,12 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 35,
     marginRight: 35,
-    marginTop: 15
+    marginTop: 15,
   },
   buttonTextStyle: {
     color: "#FFFFFF",
     paddingVertical: 10,
-    fontSize: 16
+    fontSize: 16,
   },
   textStyle: {
     backgroundColor: "#fff",
@@ -347,7 +299,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginLeft: 35,
     marginRight: 35,
-    textAlign: "center"
+    textAlign: "center",
   },
   input: {
     borderColor: "gray",
@@ -359,16 +311,16 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginLeft: 35,
     marginRight: 35,
-    marginBottom: 30
+    marginBottom: 30,
   },
   containerStyle: {
     flex: 1,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   horizontalStyle: {
     flexDirection: "row",
     justifyContent: "space-around",
-    padding: 11
-  }
+    padding: 11,
+  },
 });
 // AppRegistry.registerComponent('ReactNativeApp', () => ReactNativeApp);

@@ -9,7 +9,7 @@ import {
   TextInput,
   Drop,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
@@ -25,7 +25,7 @@ const dropdownData = [
   { label: "Prescription", value: "Prescription" },
   { label: "Discharge Summary", value: "Discharge_Summary" },
   { label: "Immunization Report", value: "Immunization_Report" },
-  { label: "Other", value: "Other" }
+  { label: "Other", value: "Other" },
 ];
 
 const data = [
@@ -33,7 +33,7 @@ const data = [
   { label: "Prescription", value: "Prescription" },
   { label: "Discharge Summary", value: "Discharge Summary" },
   { label: "Immunization_Report", value: "Immunization Report" },
-  { label: "Other", value: "Other" }
+  { label: "Other", value: "Other" },
 ];
 
 export default function ApprovalScreen(props) {
@@ -43,7 +43,6 @@ export default function ApprovalScreen(props) {
   var fileUploaded = route.params["fileUri"];
   var documentName = route.params["name"];
   var dialog = route.params["dialog"];
-  var fileType = route.params["type"];
   var [doctorName, setDoctorName] = useState("");
   var [hospitalName, setHospitalName] = useState("");
   var issueDate = "2020-11-18";
@@ -56,26 +55,26 @@ export default function ApprovalScreen(props) {
 
   // const [dialog, setDialog] = useState(true);
   var category = route.params["category"];
-  console.log("params", fileUploaded, category, documentName);
+  // console.log("params", fileUploaded, category, documentName);
   const [inputCategory, setInputCategory] = useState(category);
   var userId = route.params["userId"];
-  console.log(
-    "params0...",
-    "&&  ",
-    fileUploaded,
-    "&&  ",
-    documentName,
-    "&&  ",
-    userId,
-    "&&  ",
-    inputCategory,
-    "&&  ",
-    issueDate,
-    "&&  ",
-    doctorName,
-    "&&  ",
-    hospitalName
-  );
+  // console.log(
+  //   "params0...",
+  //   "&&  ",
+  //   fileUploaded,
+  //   "&&  ",
+  //   documentName,
+  //   "&&  ",
+  //   userId,
+  //   "&&  ",
+  //   inputCategory,
+  //   "&&  ",
+  //   issueDate,
+  //   "&&  ",
+  //   doctorName,
+  //   "&&  ",
+  //   hospitalName
+  // );
   const changeSelectedDate = (event, selectedDate) => {
     const currentDate = selectedDate || mydate;
     setDate(currentDate);
@@ -118,14 +117,14 @@ export default function ApprovalScreen(props) {
           onPress: () => {
             navigation.navigate("UploadScreen", {});
           },
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Close",
           onPress: () => {
             navigation.navigate("UploadScreen", {});
-          }
-        }
+          },
+        },
       ],
       { cancelable: false }
     );
@@ -134,7 +133,6 @@ export default function ApprovalScreen(props) {
     {
       isDisplayDate && (
         <DateTimePicker
-          maximumDate={new Date()}
           testID="dateTimePicker"
           value={mydate}
           mode={displaymode}
@@ -145,23 +143,6 @@ export default function ApprovalScreen(props) {
       );
     }
   };
-  const showError = (error) => {
-    Alert.alert(
-      error,
-      "",
-      [
-        {
-          text: "Close",
-          onPress: () => {
-            // setDialog(true);
-            navigation.navigate("CategoriesScreen", {});
-          },
-          style: "cancel"
-        }
-      ],
-      { cancelable: false }
-    );
-  };
 
   const uploadDocument = async () => {
     try {
@@ -171,54 +152,57 @@ export default function ApprovalScreen(props) {
       let filename = fileUri.split("/").pop();
 
       const extArr = /\.(\w+)$/.exec(filename);
-      // const type = getMimeType(extArr[1]);
+      const type = getMimeType(extArr[1]);
       issueDate = moment(mydate, "YYYY-MM-DD")
         .format()
         .toString()
         .split("T", [1])
         .toString();
 
-      formData.append("file", { uri: fileUri, name: filename, FileType });
+      formData.append("file", { uri: fileUri, name: filename, type });
       formData.append("documentName", documentName);
       formData.append("userId", userId);
       formData.append("category", inputCategory);
       formData.append("issuedDate", issueDate);
       formData.append("doctorName", doctorName);
       formData.append("hospitalName", hospitalName);
-      formData.append("fileType", fileType);
       formData.append("source", "user");
-      console.log(
-        "params...",
-        "&&  ",
-        fileUri,
-        "&&  ",
-        documentName,
-        "&&  ",
-        userId,
-        "&&  ",
-        inputCategory,
-        "&&  ",
-        issueDate,
-        "&&  ",
-        doctorName,
-        "&&  ",
-        hospitalName
-      );
+      // console.log(
+      //   "params...",
+      //   "&&  ",
+      //   fileUri,
+      //   "&&  ",
+      //   documentName,
+      //   "&&  ",
+      //   userId,
+      //   "&&  ",
+      //   inputCategory,
+      //   "&&  ",
+      //   issueDate,
+      //   "&&  ",
+      //   doctorName,
+      //   "&&  ",
+      //   hospitalName
+      // );
 
       console.log(configData["serverUrl"] + "/documents");
+      console.log(formData);
       await fetch(configData["serverUrl"] + "/documents", {
         method: "POST",
         body: formData,
         headers: {
-          "content-type": "multipart/form-data"
-        }
+          "content-type": "multipart/form-data",
+        },
+      })
+      .catch(function (error) {
+        console.log("-------- error0 ------- " + error);
+        alert("result:" + error);
       })
         .then(function (response) {
           // console.log("response data", response);
           return response.json();
         })
         .catch(function (error) {
-          showError();
           console.log("-------- error0 ------- " + error);
           alert("result:" + error);
         })
@@ -231,7 +215,6 @@ export default function ApprovalScreen(props) {
           showSuccessAlert();
         })
         .catch(function (error) {
-          showError();
           console.log("-------- error ------- " + error);
           alert("result:" + error);
         });
@@ -347,7 +330,6 @@ export default function ApprovalScreen(props) {
 
       {isDisplayDate && (
         <DateTimePicker
-          maximumDate={new Date()}
           testID="dateTimePicker"
           value={mydate}
           mode="date"
