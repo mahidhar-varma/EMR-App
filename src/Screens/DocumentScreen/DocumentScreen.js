@@ -9,7 +9,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
-  Alert
+  Alert,
+  Share
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -19,6 +20,7 @@ import configData from "../../../config";
 import { ActivityIndicator } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
+// import Share from "react-native-share";
 
 export default function DocumentScreen(props) {
   const { navigation, route } = props;
@@ -30,6 +32,7 @@ export default function DocumentScreen(props) {
   );
 
   const documentId = route.params.item.documentId;
+  console.log('document id....', documentId,'&& ',route.params.item.documentId)
   const fileType = route.params.item.fileType;
   var [hospitalName, setHospitalName] = useState(
     route.params.item.hospitalName
@@ -139,6 +142,83 @@ export default function DocumentScreen(props) {
       ],
       { cancelable: false }
     );
+  };
+var text='Follow the link to download document..';
+const ShareDocument = async (url) => {
+  try {
+    const result = await Share.share({
+      message: 'Follow the link to download document "'+documentName+'"'+url,
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        // shared with activity type of result.activityType
+      } else {
+        // shared
+      }
+    } else if (result.action === Share.dismissedAction) {
+      // dismissed
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+};
+  
+  const shareURL = async () => {
+    try {
+      setLoading(true);
+      console.log(
+        configData["serverUrl"] +
+          "/documents/" +
+          documentId +
+          "?userId=" +
+          userId +
+          "?category=" +
+          category +
+          "&fileType=" +
+          fileType
+      );
+      await fetch(
+        configData["serverUrl"] +
+          "/documents/" +
+          documentId +
+          "?userId=" +
+          userId +
+          "&category=" +
+          category +
+          "&fileType=" +
+          fileType,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+        .then(function (response) {
+          // console.log("response data", response);
+          return response.json();
+        })
+        .catch(function (error) {
+          console.log("-------- error0 ------- " + error);
+          alert("result:" + error);
+        })
+        .then(function (result) {
+          setURL(result["url"]);
+
+          console.log("returned url", result["url"]);
+          ShareDocument(result["url"]);
+          // Linking.openURL(result["url"]);
+          // downloadUrl();
+          //console.log('response data', documentsList)
+          setLoading(false);
+        })
+        .catch(function (error) {
+          console.log("-------- error ------- " + error);
+          alert("result:" + error);
+        });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const getURL = async () => {
@@ -587,13 +667,15 @@ export default function DocumentScreen(props) {
           >
             <Text style={styles.buttonTextStyle}>Download</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={styles.buttonStyle}
             activeOpacity={0.5}
-            onPress={() => {}}
+            onPress={() => {
+              shareURL();
+            }}
           >
             <Text style={styles.buttonTextStyle}>Share</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
       )}
     </View>

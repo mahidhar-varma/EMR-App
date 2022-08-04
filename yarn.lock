@@ -5883,6 +5883,11 @@
     "react-freeze" "^1.0.0"
     "warn-once" "^0.1.0"
 
+"react-native-share@^7.7.0":
+  "integrity" "sha512-cMmlMe4x7ER+K/XXsLASD4aarYPZJmpXhMubH3QOGzLFCDtW39bm489ZJYx9mfgdRLJVIitoDzKYA/HvM6qprw=="
+  "resolved" "https://registry.npmjs.org/react-native-share/-/react-native-share-7.7.0.tgz"
+  "version" "7.7.0"
+
 "react-native-size-matters@^0.3.1":
   "integrity" "sha512-mKOfBLIBFBcs9br1rlZDvxD5+mAl8Gfr5CounwJtxI6Z82rGrMO+Kgl9EIg3RMVf3G855a85YVqHJL2f5EDRlw=="
   "resolved" "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz"

@@ -107,15 +107,20 @@ export default function ApprovalScreen(props) {
     return null;
   };
 
-  const showSuccessAlert = (fileUri, name, userId, category) => {
+  const showSuccessAlert = (item) => {
     Alert.alert(
       "Upload Successful",
       "",
+      
       [
         {
-          text: "Ok",
+          text: "View Document",
           onPress: () => {
-            navigation.navigate("UploadScreen", {});
+            if(item){
+              userId= item.userId;
+            navigation.replace("DocumentScreen", {item, userId});
+            }
+            
           },
           style: "cancel",
         },
@@ -202,7 +207,23 @@ export default function ApprovalScreen(props) {
       //   "&&  ",
       //   hospitalName
       // );
-
+      const nameError = () => {
+        Alert.alert(
+          "A document with this name already exists",
+          "",
+          [
+            {
+              text: "Close",
+              onPress: () => {
+                // setDialog(true);
+                navigation.navigate("UploadScreen", {});
+              },
+              style: "cancel"
+            }
+          ],
+          { cancelable: false }
+        );
+      };
       console.log(configData["serverUrl"] + "/documents");
       console.log(formData);
       await fetch(configData["serverUrl"] + "/documents", {
@@ -212,28 +233,32 @@ export default function ApprovalScreen(props) {
           "content-type": "multipart/form-data",
         },
       })
-      .catch(function (error) {
-        console.log("-------- error0 ------- " + error);
-        showError();
-        alert("result:" + error);
-      })
         .then(function (response) {
           // console.log("response data", response);
           return response.json();
+        })
+        .then(function (item) {
+          if (item && item["message"] == "name error") {
+            // alert("Document with this name exists!!");
+            // navigation.navigate("UploadScreen", {});
+            setLoading(false);
+            nameError();
+          } else {
+          console.log("returned body", item);
+          showSuccessAlert(item);
+          //console.log('response data', documentsList)
+          setLoading(false);
+          //alert("Upload Successful");
+          // navigation.navigate("UploadScreen", {});
+          }
+          
         })
         .catch(function (error) {
           console.log("-------- error0 ------- " + error);
           // alert("result:" + error);
           showError();
         })
-        .then(function (result) {
-          console.log("returned body", result);
-          //console.log('response data', documentsList)
-          setLoading(false);
-          //alert("Upload Successful");
-          // navigation.navigate("UploadScreen", {});
-          showSuccessAlert();
-        })
+        
         .catch(function (error) {
           console.log("-------- error ------- " + error);
           alert("result:" + error);

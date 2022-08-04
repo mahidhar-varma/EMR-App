@@ -33,6 +33,7 @@
     "react-native-paper": "^4.12.4",
     "react-native-pspdfkit": "github:PSPDFKit/react-native",
     "react-native-reanimated": "^2.8.0",
+    "react-native-share": "^7.7.0",
     "react-native-web": "0.17.7",
     "react-navigation": "^4.4.4"
   },
