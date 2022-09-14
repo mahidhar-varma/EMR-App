@@ -366,6 +366,7 @@ const ShareDocument = async (url) => {
           console.log("Edit Successful..");
           //console.log('response data', documentsList)
           setLoading(false);
+          setIsEditable(false);
           showEditSuccess();
         })
         .catch(function (error) {
