@@ -10,6 +10,8 @@ import DocumentScreen from "../Screens/DocumentScreen/DocumentScreen";
 import ApprovalScreen from "../Screens/ApprovalScreen/ApprovalScreen";
 import HomeScreen from "../Screens/HomeScreen/HomeScreen";
 import DocumentsListSortedScreen from "../Screens/DocumentListSortedScreen/DocumentListSortedScreen";
+import ProfilesScreen from "../Screens/ProfilesScreen/ProfilesScreen";
+import LoginScreen from "../Screens/LoginScreen/LoginScreen";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +27,8 @@ function MainNavigator() {
         },
       }}
     >
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="ProfilesScreen" component={ProfilesScreen} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="UploadScreen" component={UploadScreen} />
       <Stack.Screen name="CategoriesScreen" component={CategoriesScreen} />
